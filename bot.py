@@ -9,6 +9,25 @@ from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, ADMINS, START_PIC, LI
 from utils import encode_channel_id, decode_channel_id
 from datetime import datetime, timedelta
 from pyrogram.enums import ChatType
+from flask import Flask
+import threading
+import os
+
+# Initialize Flask app
+flask_app = Flask(__name__)
+
+@flask_app.route('/health')
+def health_check():
+    return "OK", 200
+
+def run_flask():
+    port = int(os.environ.get('PORT', 8080))
+    flask_app.run(host='0.0.0.0', port=port)
+
+# Start Flask in a separate thread
+flask_thread = threading.Thread(target=run_flask)
+flask_thread.daemon = True
+flask_thread.start()
 
 app = Client("invite_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 mongo = MongoClient(MONGO_URI)
